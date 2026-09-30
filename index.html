@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Personalized AI Tutor</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+
+<body>
+
+    <div class="container" id="loginPage">
+
+        <h1>Personalized AI Tutor</h1>
+        <p>Learn according to your knowledge level</p>
+
+        <input type="text" id="studentName" placeholder="Enter your name">
+
+        <input type="email" id="email" placeholder="Enter your email">
+
+        <button onclick="login()">Login</button>
+
+    </div>
+
+    <div class="home-container" id="homePage">
+
+        <h1>Welcome to Personalized AI Tutor 👋</h1>
+        <p class="tagline">Learn Smarter • Learn Personally • Learn Better 🚀</p>
+
+        <h2 id="welcomeName"></h2>
+
+        <p>Learn smarter with personalized guidance.</p>
+
+        <button onclick="startLearning()">📚 Start Learning</button>
+        <button onclick="startTest()">📝 Diagnostic Test</button>
+        <button onclick="showProgress()">📊 My Progress</button>
+        <button onclick="revision()">🔄 Revision</button>
+        <button onclick="openAIConversation()">
+    🤖 AI Voice Tutor
+</button>
+        <div class="subject-box">
+
+    <h3>📚 What do you want to learn?</h3>
+
+    <label>Subject</label>
+
+    <input type="text"
+           id="subjectInput"
+           placeholder="e.g. Mathematics, History, Polity">
+
+    <label>Topic</label>
+
+    <input type="text"
+           id="topicInput"
+           placeholder="e.g. LCM, 1857 Revolt, Fundamental Rights">
+           <label>Language</label>
+
+<select id="languageInput">
+    <option value="English">English</option>
+    <option value="Marathi">Marathi</option>
+    <option value="Both">English + Marathi</option>
+</select>
+
+
+    <p id="topicError"></p>
+
+</div>
+<!-- AI Teaching Section -->
+<div id="aiTeachingBox" class="subject-box">
+
+    <h3>🤖 AI Teaching</h3>
+
+    <h4 id="teachingTitle"></h4>
+
+    <p id="teachingContent">
+        AI will teach the selected topic here.
+    </p>
+
+    <button onclick="startAITeaching()">
+    🤖 Start AI Teaching
+</button>
+<button id="teachingDiagnosticButton"
+        onclick="startDiagnostic()"
+        style="display:none;">
+    📝 Start Diagnostic Test
+</button>
+</div>
+
+    </div>
+
+    <div class="test-container" id="testPage">
+
+        <h1>📝 Diagnostic Test</h1>
+
+        <p>Answer the following questions.</p>
+
+        <div id="questions"></div>
+
+        <button onclick="submitTest()">Submit Test</button>
+
+    </div>
+
+    <div class="result-container" id="resultPage">
+       
+
+        <h1>🎯 Your Result</h1>
+
+        <h2 id="score"></h2>
+
+        <h2 id="level"></h2>
+
+        <p id="recommendation"></p>
+
+        <button onclick="goHome()">Back to Home</button>
+
+    </div>
+<div class="progress-container" id="progressPage">
+    <h1>📊 My Progress</h1>
+
+    <div class="progress-card">
+        <h2>Student: <span id="progressName"></span></h2>
+        <p id="progressScore"></p>
+        <p id="progressLevel"></p>
+        <p>📚 Topic: Introduction to Artificial Intelligence</p>
+        <p>🧠 Learning Method: Personalized + Feynman + Adaptive Learning</p>
+        <p>✅ Learning Status: In Progress</p>
+    </div>
+
+    <button onclick="goHome()">Back to Home</button>
+</div>
+<div class="revision-container" id="revisionPage">
+    <h1>🔄 Spaced Revision</h1>
+
+    <div class="revision-card">
+
+       <p><strong>Revision 1:</strong> <span id="revision1"></span></p>
+<p><strong>Revision 2:</strong> <span id="revision2"></span></p>
+<p><strong>Revision 3:</strong> <span id="revision3"></span></p>
+        <h3>🧠 Quick Revision Question</h3>
+<p id="revisionQuestion"></p>
+        <button onclick="completeRevision()">
+            ✅ Complete Revision
+        </button>
+
+        <p id="revisionFeedback"></p>
+    </div>
+
+    <button onclick="goHome()">Back to Home</button>
+</div>
+    <script src="script.js"></script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function() {
+        navigator.serviceWorker.register("./service-worker.js")
+            .then(function() {
+                console.log("Service Worker registered successfully");
+            })
+            .catch(function(error) {
+                console.log("Service Worker registration failed:", error);
+            });
+    });
+}
+</script>
+
+
+    <!-- PERSONALIZED LEARNING PAGE -->
+
+<div class="learning-container" id="learningPage">
+
+    <h1>📚 Personalized Learning</h1>
+
+    <h2 id="learningLevel"></h2>
+
+    <div class="learning-card">
+
+        <h2 id="learningTopic"></h2>
+
+        <h3 id="learningTitle"></h3>
+
+        <p id="learningContent"></p>
+
+        <div class="practice-box">
+
+            <h3>🧠 Practice Question</h3>
+
+            <p id="practiceQuestion"></p>
+            <textarea
+    id="answer"
+    placeholder="Explain the concept in your own words...">
+</textarea>
+
+<button type="button"
+    onclick="startGeneralVoiceAnswer('answer', 'feynmanVoiceStatus')">
+    🎤 Speak Answer
+</button>
+
+<button type="button"
+    onclick="stopConversationVoice()">
+    ⏹️ Stop
+</button>
+<p id="feynmanVoiceStatus"></p>
+
+<button onclick="checkAnswer()">
+    Submit Answer
+</button>
+<p id="feedback"></p>
+<div class="adaptive-box">
+    <h3>🎯 Adaptive Practice</h3>
+    <p id="adaptiveQuestion"></p>
+    <textarea
+    id="adaptiveAnswer"
+    placeholder="Write your answer here or use the microphone...">
+</textarea>
+
+<button type="button"
+    onclick="startGeneralVoiceAnswer('adaptiveAnswer', 'adaptiveVoiceStatus')">
+    🎤 Speak Answer
+</button>
+
+<button type="button"
+    onclick="stopVoiceAnswer()">
+    ⏹️ Stop
+</button>
+
+<p id="adaptiveVoiceStatus"></p>
+
+<button onclick="submitAdaptiveAnswer()">
+    Submit Adaptive Answer
+</button>
+
+<p id="adaptiveFeedback"></p>
+    
+</div>
+        </div>
+
+    </div>
+
+    <button onclick="goHome()">Back to Home</button>
+
+</div>
+<!-- AI VOICE TUTOR PAGE -->
+
+<div class="voice-tutor-container" id="voiceTutorPage">
+
+    <h1>🤖 AI Voice Tutor</h1>
+
+    <p>
+        Learn by talking with your personalized AI tutor.
+    </p>
+
+    <div class="conversation-box" id="conversationBox">
+
+        <div class="ai-message">
+            <strong>🤖 AI Tutor:</strong>
+            <p id="aiGreeting">
+                Hello! What would you like to learn today?
+            </p>
+        </div>
+
+    </div>
+
+    <div class="voice-input-box">
+
+        <textarea
+            id="voiceStudentAnswer"
+            placeholder="Type your message here...">
+        </textarea>
+
+        <button type="button"
+            onclick="startConversationVoice()">
+            🎤 Speak
+        </button>
+
+        <button type="button"
+            onclick="stopVoiceAnswer()">
+            ⏹️ Stop
+        </button>
+
+        <button type="button" 
+    onclick="sendConversationMessage()"> 
+    📤 Send 
+</button> 
+
+<button type="button" 
+    onclick="stopAISpeech()"> 
+    🔇 Stop AI
+</button>
+
+<button type="button"
+    onclick="playAIFromStart()">
+    🔊 Play From Start
+</button>
+
+<button type="button"
+    onclick="resumeAISpeech()">
+    ▶️ Resume
+</button>
+
+        <p id="conversationVoiceStatus"></p>
+
+    </div>
+
+    <button onclick="goHome()">
+        🏠 Back to Home
+    </button>
+
+</div>
+
+</body>
+</html>

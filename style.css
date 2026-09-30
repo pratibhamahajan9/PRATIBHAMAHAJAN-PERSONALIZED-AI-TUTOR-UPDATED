@@ -1,0 +1,515 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f2f4f8;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+.container,
+.home-container,
+.test-container,
+.result-container {
+    background: white;
+    padding: 35px;
+    width: 600px;
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.home-container,
+.test-container,
+.result-container {
+    display: none;
+}
+
+input {
+    width: 90%;
+    padding: 12px;
+    margin: 10px;
+    box-sizing: border-box;
+}
+
+button {
+    padding: 12px 25px;
+    margin: 8px;
+    cursor: pointer;
+    border: none;
+    border-radius: 8px;
+    background-color: #e8e8e8;
+}
+
+button:hover {
+    background-color: #d5d5d5;
+}
+
+.question {
+    text-align: left;
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+}
+
+.question label {
+    display: block;
+    margin: 8px;
+    cursor: pointer;
+}
+
+#level {
+    margin: 20px;
+}
+.learning-container {
+    display: none;
+    background: white;
+    padding: 35px;
+    width: 650px;
+    text-align: center;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.learning-card {
+    text-align: left;
+    padding: 20px;
+    margin-top: 20px;
+    background-color: #f7f7f7;
+    border-radius: 12px;
+}
+
+.practice-box {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #eeeeee;
+    border-radius: 10px;
+}
+.learning-container {
+    display: none;
+    background: white;
+    padding: 35px;
+    width: 650px;
+    text-align: center;
+    border-radius: 15px;
+}
+
+.learning-card {
+    text-align: left;
+    padding: 20px;
+    margin-top: 20px;
+    background: #f7f7f7;
+    border-radius: 12px;
+}
+
+.practice-box {
+    margin-top: 20px;
+    padding: 15px;
+    background: #eeeeee;
+    border-radius: 10px;
+}
+textarea {
+    width: 90%;
+    height: 100px;
+    padding: 10px;
+    margin: 15px;
+}
+
+#feedback {
+    font-weight: bold;
+    margin: 15px;
+}
+/* ===== Professional UI ===== */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #222;
+}
+
+.container,
+.home-container,
+.test-container,
+.result-container,
+.learning-container {
+    width: 85%;
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 30px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 15px;
+}
+
+button {
+    padding: 12px 22px;
+    margin: 10px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+input,
+textarea {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+}
+
+.learning-card,
+.progress-card,
+.revision-card,
+.adaptive-box {
+    background: white;
+    padding: 25px;
+    margin: 20px auto;
+    border-radius: 15px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+}
+
+.learning-card p,
+.progress-card p,
+.revision-card p {
+    line-height: 1.6;
+}
+
+.question {
+    background: white;
+    padding: 20px;
+    margin: 15px 0;
+    border-radius: 12px;
+    text-align: left;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.question label {
+    display: block;
+    padding: 8px;
+}
+
+#feedback,
+#revisionFeedback {
+    margin: 15px;
+    font-weight: bold;
+}
+/* ===== Modern AI Tutor UI ===== */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #eef2ff, #f8faff, #e0f2fe);
+    color: #1e293b;
+    min-height: 100vh;
+}
+
+/* Main Containers */
+.container,
+.home-container,
+.test-container,
+.result-container,
+.learning-container,
+.progress-container,
+.revision-container {
+    width: 85%;
+    max-width: 850px;
+    margin: 40px auto;
+    padding: 35px;
+    text-align: center;
+}
+
+/* Headings */
+h1 {
+    font-size: 32px;
+    margin-bottom: 10px;
+    color: #1e3a8a;
+}
+
+h2 {
+    color: #334155;
+}
+
+h3 {
+    color: #475569;
+}
+
+/* Inputs */
+input[type="text"],
+input[type="email"] {
+    width: 80%;
+    padding: 14px;
+    margin: 10px;
+    border: 2px solid #cbd5e1;
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+}
+
+input:focus,
+textarea:focus {
+    border-color: #6366f1;
+}
+
+/* Textarea */
+textarea {
+    width: 90%;
+    min-height: 110px;
+    padding: 15px;
+    border: 2px solid #cbd5e1;
+    border-radius: 12px;
+    font-size: 16px;
+    resize: vertical;
+    box-sizing: border-box;
+}
+
+/* Buttons */
+button {
+    background: linear-gradient(135deg, #4f46e5, #7c3aed);
+    color: white;
+    padding: 13px 24px;
+    margin: 10px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.2s;
+    box-shadow: 0 4px 10px rgba(79,70,229,0.25);
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 16px rgba(79,70,229,0.35);
+}
+
+/* Cards */
+.learning-card,
+.progress-card,
+.revision-card,
+.adaptive-box {
+    background: rgba(255,255,255,0.95);
+    padding: 28px;
+    margin: 22px auto;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(15,23,42,0.10);
+    border: 1px solid #e2e8f0;
+}
+
+/* Home buttons */
+.home-container button {
+    min-width: 220px;
+}
+
+/* Quiz Questions */
+.question {
+    background: white;
+    padding: 22px;
+    margin: 18px 0;
+    border-radius: 15px;
+    text-align: left;
+    box-shadow: 0 5px 15px rgba(15,23,42,0.08);
+}
+
+.question label {
+    display: block;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 8px;
+}
+
+.question label:hover {
+    background: #eef2ff;
+}
+
+/* Feedback */
+#feedback,
+#revisionFeedback {
+    padding: 12px;
+    margin: 18px;
+    font-weight: bold;
+    border-radius: 10px;
+    background: #ecfdf5;
+}
+
+/* Adaptive box */
+.adaptive-box {
+    text-align: left;
+    border-left: 5px solid #6366f1;
+}
+
+/* Progress */
+.progress-card p {
+    font-size: 17px;
+    padding: 8px;
+}
+
+/* Smooth appearance */
+.container,
+.home-container,
+.test-container,
+.result-container,
+.learning-container,
+.progress-container,
+.revision-container {
+    animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+/* ===== Attractive Home Dashboard ===== */
+
+.home-container {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 25px;
+    box-shadow: 0 10px 35px rgba(30, 41, 59, 0.12);
+    margin-top: 60px;
+    padding: 45px 30px;
+}
+
+.home-container h1 {
+    font-size: 36px;
+    margin-bottom: 8px;
+}
+
+.home-container h2 {
+    font-size: 24px;
+    color: #6366f1;
+    margin: 10px 0;
+}
+
+.home-container p {
+    font-size: 18px;
+    color: #64748b;
+    margin-bottom: 30px;
+}
+
+/* Home feature buttons */
+
+.home-container button {
+    width: 220px;
+    min-height: 65px;
+    margin: 12px;
+    font-size: 17px;
+    border-radius: 15px;
+}
+
+/* Login card */
+
+.container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 25px;
+    box-shadow: 0 10px 35px rgba(30, 41, 59, 0.12);
+    margin-top: 80px;
+}
+
+.container h1 {
+    font-size: 34px;
+}
+
+/* Learning page */
+
+.learning-container {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 25px;
+    box-shadow: 0 10px 35px rgba(30, 41, 59, 0.12);
+}
+
+.learning-container > h1 {
+    font-size: 32px;
+}
+
+/* Result page */
+
+.result-container {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 25px;
+    box-shadow: 0 10px 35px rgba(30, 41, 59, 0.12);
+}
+
+/* Progress page */
+
+.progress-container {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 25px;
+    box-shadow: 0 10px 35px rgba(30, 41, 59, 0.12);
+}
+
+/* Revision page */
+
+.revision-container {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 25px;
+    box-shadow: 0 10px 35px rgba(30, 41, 59, 0.12);
+}
+/* Hide pages initially */
+.progress-container,
+.revision-container {
+    display: none;
+}
+input[type="radio"] {
+    width: auto;
+    margin: 8px;
+    padding: 0;
+}
+/* ===== LOGIN PAGE ===== */
+
+#loginPage input {
+    display: block;
+    width: 90%;
+    margin: 15px auto;
+    box-sizing: border-box;
+}
+
+#loginPage button {
+    display: block;
+    margin: 20px auto;
+}
+/* ===== SUBJECT BOX ===== */
+
+.subject-box label {
+    display: block;
+    margin-top: 15px;
+    margin-bottom: 6px;
+    text-align: left;
+}
+
+.subject-box input,
+.subject-box select {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 12px;
+}
+
+.subject-box select {
+    height: 42px;
+}
+/* ===== PAGE VISIBILITY ===== */
+
+#homePage,
+#testPage,
+#resultPage,
+#progressPage,
+#revisionPage,
+#learningPage,
+#voiceTutorPage {
+    display: none;
+}
+
+#loginPage {
+    display: block;
+}
