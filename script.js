@@ -67,7 +67,7 @@ document.getElementById("learningTopic").innerText =
     try {
 
         const response = await fetch(
-            "http://localhost:3000/personalized-learning",
+            "https://pratibhamahajan-personalized-ai-tutor.onrender.com/personalized-learning",
             {
                 method: "POST",
 
@@ -162,7 +162,7 @@ async function submitTest() {
     try {
 
         const response = await fetch(
-            "http://localhost:3000/evaluate-diagnostic",
+            "https://pratibhamahajan-personalized-ai-tutor.onrender.com/evaluate-diagnostic",
             {
                 method: "POST",
 
@@ -242,7 +242,7 @@ async function revision() {
     try {
 
         const response = await fetch(
-            "http://localhost:3000/revision-question",
+            "https://pratibhamahajan-personalized-ai-tutor.onrender.com/revision-question",
             {
                 method: "POST",
 
@@ -312,7 +312,7 @@ async function checkAnswer() {
     feedback.innerText = "🤖 AI is checking your answer...";
 
     try {
-        const response = await fetch("http://localhost:3000/ask-ai", {
+        const response = await fetch("https://pratibhamahajan-personalized-ai-tutor.onrender.com/ask-ai", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -369,7 +369,7 @@ async function submitAdaptiveAnswer() {
     feedback.innerText = "🤖 AI is evaluating your answer...";
 
     try {
-        const response = await fetch("http://localhost:3000/ask-ai", {
+        const response = await fetch("https://pratibhamahajan-personalized-ai-tutor.onrender.com/ask-ai", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -464,7 +464,7 @@ async function showAdaptiveQuestion() {
     adaptiveQuestion.innerText = "🤖 AI is generating your adaptive question...";
 
     try {
-        const response = await fetch("http://localhost:3000/adaptive-question", {
+        const response = await fetch("https://pratibhamahajan-personalized-ai-tutor.onrender.com/adaptive-question", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -535,7 +535,7 @@ async function startDiagnostic() {
     try {
 
         const response = await fetch(
-            "http://localhost:3000/generate-diagnostic",
+            "https://pratibhamahajan-personalized-ai-tutor.onrender.com/generate-diagnostic",
             {
                 method: "POST",
 
@@ -712,7 +712,7 @@ async function startAITeaching() {
     try {
 
         const response = await fetch(
-            "http://localhost:3000/ai-teaching",
+            "https://pratibhamahajan-personalized-ai-tutor.onrender.com/ai-teaching",
             {
                 method: "POST",
 
@@ -1137,7 +1137,7 @@ async function sendConversationMessage() {
     try {
 
         const response = await fetch(
-            "http://localhost:3000/ask-ai",
+            "https://pratibhamahajan-personalized-ai-tutor.onrender.com/ask-ai",
             {
                 method: "POST",
 
