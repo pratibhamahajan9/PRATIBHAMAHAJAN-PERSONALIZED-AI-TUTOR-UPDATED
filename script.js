@@ -5,6 +5,7 @@ let previousAnswer = "";
 let selectedSubject = "";
 let selectedTopic = "";
 let adaptiveDifficulty = 1;
+let diagnosticQuestions = null;
 
 function login() {
 
@@ -37,9 +38,7 @@ function login() {
     console.log("Login Page:", loginPage);
     console.log("Home Page:", homePage);
 }
-
 async function startLearning() {
-
     showOnly("learningPage");
 
     const learningTitle =
@@ -52,37 +51,31 @@ async function startLearning() {
         document.getElementById("practiceQuestion");
 
     document.getElementById("learningLevel").innerText =
-    "Your Level: " + studentLevel;
+        "Your Level: " + studentLevel;
 
-document.getElementById("learningTopic").innerText =
-    "Topic: " + selectedTopic;
+    document.getElementById("learningTopic").innerText =
+        "Topic: " + selectedTopic;
 
     learningTitle.innerText =
         "🤖 AI is preparing your personalized lesson...";
 
     learningContent.innerText = "";
-
     practiceQuestion.innerText = "";
 
     try {
-
         const response = await fetch(
             "https://pratibhamahajan-personalized-ai-tutor.onrender.com/personalized-learning",
             {
                 method: "POST",
-
                 headers: {
                     "Content-Type": "application/json"
                 },
-
                 body: JSON.stringify({
                     subject: selectedSubject,
                     topic: selectedTopic,
                     level: studentLevel,
-                    language: document.getElementById("languageInput").value
-
-
-
+                    language:
+                        document.getElementById("languageInput").value
                 })
             }
         );
@@ -98,13 +91,12 @@ document.getElementById("learningTopic").innerText =
                 data.content;
 
             practiceQuestion.innerText =
-                data.practiceQuestion;
+                data.practiceQuestion || "";
 
         } else {
 
             learningTitle.innerText =
                 "❌ Learning content could not be generated.";
-
         }
 
     } catch (error) {
@@ -113,12 +105,14 @@ document.getElementById("learningTopic").innerText =
 
         learningTitle.innerText =
             "❌ Unable to connect to AI backend.";
-
     }
 }
 async function submitTest() {
 
-    const questions = document.querySelectorAll("#questions .diagnostic-question");
+    const questions = document.querySelectorAll(
+        "#questions .diagnostic-question"
+    );
+
     const answers = [];
 
     questions.forEach((question, index) => {
@@ -127,35 +121,49 @@ async function submitTest() {
             'input[type="radio"]:checked'
         );
 
-        const textAnswer = question.querySelector("textarea");
+        const textAnswer =
+            question.querySelector("textarea");
+
+        let answer = "";
 
         if (selected) {
-            answers.push({
-                question: index + 1,
-                answer: selected.value
-            });
-        } 
-        else if (textAnswer) {
-            answers.push({
-                question: index + 1,
-                answer: textAnswer.value
-            });
+
+            answer = selected.value;
+
+        } else if (textAnswer) {
+
+            answer = textAnswer.value.trim();
         }
-        else {
-            answers.push({
-                question: index + 1,
-                answer: ""
-            });
-        }
+
+        answers.push({
+            question: index + 1,
+            answer: answer
+        });
     });
 
-    if (answers.some(item => item.answer.trim() === "")) {
-        alert("Please answer all questions.");
+    // प्रत्येक question compulsory नाही.
+    // कमीत कमी एक answer आवश्यक आहे.
+
+    const answeredCount = answers.filter(
+        item => item.answer.trim() !== ""
+    ).length;
+
+    if (answeredCount === 0) {
+
+        alert(
+            "Please answer at least one question before submitting."
+        );
+
         return;
     }
 
     document.getElementById("score").innerText =
         "🤖 AI is evaluating your answers...";
+
+    document.getElementById("level").innerText = "";
+
+    document.getElementById("recommendation").innerText =
+        "Please wait while AI analyzes your answers.";
 
     showOnly("resultPage");
 
@@ -171,18 +179,30 @@ async function submitTest() {
                 },
 
                 body: JSON.stringify({
+
                     subject: selectedSubject,
+
                     topic: selectedTopic,
+
+                    language:
+                        document.getElementById("languageInput").value,
+
+                    questions: diagnosticQuestions,
+
                     answers: answers
                 })
             }
         );
+        console.log("QUESTIONS SENT:", diagnosticQuestions);
+console.log("ANSWERS SENT:", answers);
 
         const data = await response.json();
+        console.log("EVALUATION RESPONSE:", data);
 
         if (data.score !== undefined) {
 
             studentScore = data.score;
+
             studentLevel = data.level;
 
             document.getElementById("score").innerText =
@@ -192,26 +212,33 @@ async function submitTest() {
                 "Your Level: " + data.level;
 
             document.getElementById("recommendation").innerText =
-                data.feedback;
+                data.feedback ||
+                "AI analysis completed.";
 
         } else {
 
             document.getElementById("score").innerText =
                 "AI evaluation failed.";
 
+            document.getElementById("recommendation").innerText =
+                data.error ||
+                "Unable to evaluate the diagnostic test.";
         }
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "DIAGNOSTIC SUBMIT ERROR:",
+            error
+        );
 
         document.getElementById("score").innerText =
             "❌ Unable to connect to AI backend.";
 
+        document.getElementById("recommendation").innerText =
+            "Please try again later.";
     }
 }
-
-
 function goHome() {
     showOnly("homePage");
 }
@@ -480,6 +507,7 @@ async function showAdaptiveQuestion() {
         });
 
         const data = await response.json();
+        diagnosticQuestions = data.questions;
 
         if (data.question) {
             adaptiveQuestion.innerText = data.question;
@@ -517,20 +545,32 @@ function openAIConversation() {
 }
 async function startDiagnostic() {
 
-    const subject = document.getElementById("subjectInput").value.trim();
-    const topic = document.getElementById("topicInput").value.trim();
-    const language = document.getElementById("languageInput").value;
-    const error = document.getElementById("topicError");
+    const subject =
+        document.getElementById("subjectInput").value.trim();
+
+    const topic =
+        document.getElementById("topicInput").value.trim();
+
+    const language =
+        document.getElementById("languageInput").value;
+
+    const error =
+        document.getElementById("topicError");
 
     if (subject === "" || topic === "") {
-        error.innerText = "Please enter both Subject and Topic.";
+
+        error.innerText =
+            "Please enter both Subject and Topic.";
+
         return;
     }
 
     selectedSubject = subject;
+
     selectedTopic = topic;
 
-    error.innerText = "🤖 AI is preparing your diagnostic test...";
+    error.innerText =
+        "🤖 AI is preparing your diagnostic test...";
 
     try {
 
@@ -544,8 +584,11 @@ async function startDiagnostic() {
                 },
 
                 body: JSON.stringify({
+
                     subject: selectedSubject,
+
                     topic: selectedTopic,
+
                     language: language
                 })
             }
@@ -555,111 +598,138 @@ async function startDiagnostic() {
 
         if (data.questions) {
 
-            const container = document.getElementById("questions");
+            // VERY IMPORTANT
+            // Generated questions memory मध्ये save करणे.
+            // यामध्ये MCQ correctAnswer सुद्धा आहे.
+            diagnosticQuestions = data.questions;
+
+            const container =
+                document.getElementById("questions");
 
             container.innerHTML = "";
 
+            // =========================
             // PART A - MCQ
-            const mcqTitle = document.createElement("h2");
+            // =========================
+
+            const mcqTitle =
+                document.createElement("h2");
+
             mcqTitle.innerText =
-                "Part A - Multiple Choice Questions";
+                "Part A - Multiple Choice Questions (1 Mark Each)";
 
             container.appendChild(mcqTitle);
 
-            data.questions.mcq.forEach((q, index) => {
+            data.questions.mcq.forEach(
+                (q, index) => {
 
-                const div = document.createElement("div");
+                    const div =
+                        document.createElement("div");
 
-                div.className = "diagnostic-question";
+                    div.className =
+                        "diagnostic-question";
 
-                div.innerHTML = `
-                    <p>
-                        <strong>
-                            Q${index + 1}. ${q.question}
-                        </strong>
-                    </p>
+                    div.innerHTML = `
+                        <p>
+                            <strong>
+                                Q${index + 1}. ${q.question}
+                            </strong>
+                        </p>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="q${index}"
-                            value="A">
-                        A. ${q.options.A}
-                    </label><br>
+                        <label>
+                            <input
+                                type="radio"
+                                name="q${index}"
+                                value="A">
+                            A. ${q.options.A}
+                        </label>
+                        <br>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="q${index}"
-                            value="B">
-                        B. ${q.options.B}
-                    </label><br>
+                        <label>
+                            <input
+                                type="radio"
+                                name="q${index}"
+                                value="B">
+                            B. ${q.options.B}
+                        </label>
+                        <br>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="q${index}"
-                            value="C">
-                        C. ${q.options.C}
-                    </label><br>
+                        <label>
+                            <input
+                                type="radio"
+                                name="q${index}"
+                                value="C">
+                            C. ${q.options.C}
+                        </label>
+                        <br>
 
-                    <label>
-                        <input
-                            type="radio"
-                            name="q${index}"
-                            value="D">
-                        D. ${q.options.D}
-                    </label>
-                `;
+                        <label>
+                            <input
+                                type="radio"
+                                name="q${index}"
+                                value="D">
+                            D. ${q.options.D}
+                        </label>
+                    `;
 
-                container.appendChild(div);
-            });
+                    container.appendChild(div);
+                }
+            );
 
-
+            // =========================
             // PART B - DESCRIPTIVE
+            // =========================
+
             const descriptiveTitle =
                 document.createElement("h2");
 
             descriptiveTitle.innerText =
-                "Part B - Descriptive Questions";
+                "Part B - Descriptive Questions (2.5 Marks Each)";
 
-            container.appendChild(descriptiveTitle);
+            container.appendChild(
+                descriptiveTitle
+            );
 
+            data.questions.descriptive.forEach(
+                (q, index) => {
 
-            data.questions.descriptive.forEach((q, index) => {
+                    const div =
+                        document.createElement("div");
 
-                const div = document.createElement("div");
+                    div.className =
+                        "diagnostic-question";
 
-                div.className = "diagnostic-question";
+                    div.innerHTML = `
 
-                div.innerHTML = `
-    <p>
-        <strong>
-            Q${index + 6}. ${q.question}
-        </strong>
-    </p>
+                        <p>
+                            <strong>
+                                Q${index + 6}. ${q.question}
+                            </strong>
+                        </p>
 
-    <button type="button"
-        onclick="startVoiceAnswer(this)">
-        🎤 Speak Answer
-    </button>
+                        <button
+                            type="button"
+                            onclick="startVoiceAnswer(this)">
+                            🎤 Speak Answer
+                        </button>
 
-    <button type="button"
-        onclick="stopVoiceAnswer()">
-        ⏹️ Stop
-    </button>
+                        <button
+                            type="button"
+                            onclick="stopVoiceAnswer()">
+                            ⏹️ Stop
+                        </button>
 
-    <p class="voice-status"></p>
+                        <p class="voice-status"></p>
 
-    <textarea
-        placeholder="Write your answer here or use the microphone..."
-        rows="5">
-    </textarea>
-`;
+                        <textarea
+                            placeholder="Write your answer here or use the microphone..."
+                            rows="5">
+                        </textarea>
+                    `;
 
-                container.appendChild(div);
-            });
-
+                    container.appendChild(div);
+                }
+            );
 
             error.innerText =
                 "✅ Diagnostic test generated successfully!";
@@ -670,16 +740,19 @@ async function startDiagnostic() {
 
             error.innerText =
                 "❌ AI could not generate the test.";
-
         }
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "DIAGNOSTIC GENERATION ERROR:",
+            error
+        );
 
-        document.getElementById("topicError").innerText =
+        document.getElementById(
+            "topicError"
+        ).innerText =
             "❌ Unable to connect to AI backend.";
-
     }
 }
 async function startAITeaching() {

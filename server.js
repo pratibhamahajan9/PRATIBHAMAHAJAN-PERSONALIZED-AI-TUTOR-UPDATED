@@ -160,6 +160,130 @@ Do not use unnecessary Markdown symbols such as **, *, # or backticks.
         });
     }
 });
+app.post("/generate-diagnostic", async (req, res) => {
+    try {
+
+        const subject = req.body.subject;
+        const topic = req.body.topic;
+        const language = req.body.language;
+
+        const response = await ai.models.generateContent({
+            model: "gemini-3.5-flash-lite",
+
+            contents: `You are a personalized AI tutor creating a diagnostic assessment.
+
+Subject: ${subject}
+Topic: ${topic}
+Language: ${language}
+
+Create a NEW diagnostic test for this student.
+
+IMPORTANT:
+Every time this endpoint is called, generate a fresh set of questions.
+Do not reuse a fixed question set.
+Vary the wording, examples, concepts and application situations while remaining factually correct.
+
+The test must contain EXACTLY:
+
+PART A - MCQ
+- Exactly 5 questions.
+- Each question carries 1 mark.
+- Total MCQ marks = 5.
+- Each question must have exactly 4 options: A, B, C, D.
+- Include a mixture of basic understanding, conceptual understanding and application-based questions.
+- Include the correct answer.
+- Do not make all questions from only one small part of the topic.
+
+PART B - DESCRIPTIVE
+- Exactly 2 questions.
+- Each question carries 2.5 marks.
+- Total descriptive marks = 5.
+- Questions should require the student to explain the concept in their own words.
+- Questions should test understanding rather than simple memorization.
+
+TOTAL MARKS:
+5 MCQ marks + 5 descriptive marks = 10 marks.
+
+LANGUAGE RULES:
+
+If language is Marathi:
+- Write questions and options in simple Marathi.
+- Important technical terms may remain in English in brackets.
+
+If language is English:
+- Write everything in simple English.
+
+If language is English + Marathi:
+- Write each question in English.
+- Give its Marathi translation below it.
+- Keep important technical terms in English.
+
+IMPORTANT:
+- Return ONLY valid JSON.
+- Do not use markdown.
+- Do not use code blocks.
+- Do not add explanations outside the JSON.
+- Generate exactly 5 MCQs and exactly 2 descriptive questions.
+
+Use exactly this JSON structure:
+
+{
+  "mcq": [
+    {
+      "question": "Question",
+      "options": {
+        "A": "Option A",
+        "B": "Option B",
+        "C": "Option C",
+        "D": "Option D"
+      },
+      "correctAnswer": "A"
+    }
+  ],
+  "descriptive": [
+    {
+      "question": "Question"
+    }
+  ]
+}`
+        });
+
+        let result = response.text.trim();
+
+        result = result
+            .replace(/```json/g, "")
+            .replace(/```/g, "")
+            .trim();
+
+        const questions = JSON.parse(result);
+
+        // Safety check: make sure AI returned exactly 5 MCQs and 2 descriptive questions
+        if (
+            !questions.mcq ||
+            questions.mcq.length !== 5 ||
+            !questions.descriptive ||
+            questions.descriptive.length !== 2
+        ) {
+            return res.status(500).json({
+                error: "AI did not generate exactly 5 MCQs and 2 descriptive questions."
+            });
+        }
+
+        res.json({
+            questions: questions
+        });
+
+    } catch (error) {
+
+        console.error("DIAGNOSTIC GENERATION ERROR:", error);
+
+        res.status(500).json({
+            error: "Diagnostic generation failed",
+            details: error.message
+        });
+
+    }
+});
 app.post("/adaptive-question", async (req, res) => {
     try {
 
@@ -230,76 +354,146 @@ Do not give the answer.`
         });
     }
 });
-app.post("/generate-diagnostic", async (req, res) => {
+app.post("/evaluate-diagnostic", async (req, res) => {
     try {
 
         const subject = req.body.subject;
         const topic = req.body.topic;
         const language = req.body.language;
+        const questions = req.body.questions;
+        const answers = req.body.answers;
+
+        if (!questions || !answers) {
+            return res.status(400).json({
+                error: "Diagnostic questions or answers are missing."
+            });
+        }
 
         const response = await ai.models.generateContent({
+
             model: "gemini-3.5-flash-lite",
 
-            contents: `You are a personalized AI tutor.
+            contents: `You are an AI diagnostic evaluator.
 
 Subject: ${subject}
 Topic: ${topic}
-Language: ${language}
+Selected Language: ${language}
 
-Create a diagnostic test.
 
-The test must contain:
+
+The diagnostic test has exactly 10 marks.
+
+MARKING SCHEME:
 
 PART A - MCQ
-- Exactly 5 questions.
-- Each question must have 4 options: A, B, C, D.
-- Test basic understanding, conceptual knowledge and application.
-- Include the correct answer.
+- Exactly 5 MCQs.
+- Each MCQ = 1 mark.
+- Maximum = 5 marks.
 
 PART B - DESCRIPTIVE
-- Exactly 2 questions.
-- These questions should require the student to explain concepts in their own words.
+- Exactly 2 descriptive questions.
+- Each question = 2.5 marks.
+- Maximum = 5 marks.
 
-LANGUAGE RULES:
+TOTAL = 10 MARKS.
 
-If language is Marathi:
-- Write the questions and options in simple Marathi.
-- Keep important technical terms in English in brackets.
+GENERATED DIAGNOSTIC QUESTIONS:
+${JSON.stringify(questions)}
 
-If language is English:
-- Write everything in simple English.
+STUDENT ANSWERS:
+${JSON.stringify(answers)}
 
-If language is English + Marathi:
-- Write each question in English.
-- Give its Marathi translation below it.
-- Keep technical terms in English.
+IMPORTANT MCQ EVALUATION:
+
+For each MCQ:
+
+1. Look at the generated question.
+2. Look at its options.
+3. Look at its "correctAnswer".
+4. Compare the student's selected answer with the actual correctAnswer.
+
+Scoring:
+- Correct MCQ = 1 mark.
+- Incorrect MCQ = 0 marks.
+- Unanswered MCQ = 0 marks.
+
+IMPORTANT DESCRIPTIVE EVALUATION:
+
+There are exactly 2 descriptive questions.
+
+Each descriptive question has maximum 2.5 marks.
+
+Give marks based on:
+- Conceptual correctness
+- Understanding
+- Completeness
+- Relevance to the question
+
+Scoring can be partial:
+
+2.5 = correct and complete
+2.0 = mostly correct with a small missing point
+1.5 = partially correct
+1.0 = limited understanding
+0.5 = very little correct information
+0 = incorrect, irrelevant or unanswered
+
+Do NOT give marks simply because the answer is long.
+
+Do NOT penalize minor grammar or spelling mistakes if the concept is correct.
 
 IMPORTANT:
-Return ONLY valid JSON.
-Do not use markdown.
-Do not use code blocks.
 
-Use exactly this JSON structure:
+- Unanswered questions receive 0 marks.
+- Maximum MCQ score = 5.
+- Maximum descriptive score = 5.
+- Final score must be between 0 and 10.
+- Final score = MCQ score + descriptive score.
+- Never give more than 10 marks.
+
+LEVEL:
+
+Beginner:
+Score below 4
+
+Intermediate:
+Score from 4 to 7.49
+
+Advanced:
+Score from 7.5 to 10
+LANGUAGE RULE FOR FEEDBACK:
+
+Write the feedback in the selected language.
+
+If selected language is Marathi:
+- Write feedback in simple Marathi.
+- Important technical terms may remain in English.
+
+If selected language is English:
+- Write feedback in simple English.
+
+If selected language is English + Marathi:
+- Write feedback in English and also provide Marathi explanation.
+FEEDBACK:
+
+Give useful feedback including:
+
+1. Overall performance
+2. Strengths
+3. Weaknesses or areas for improvement
+4. Mention unanswered questions if any
+
+Return ONLY valid JSON.
+
+Use exactly this format:
 
 {
-  "mcq": [
-    {
-      "question": "Question",
-      "options": {
-        "A": "Option A",
-        "B": "Option B",
-        "C": "Option C",
-        "D": "Option D"
-      },
-      "correctAnswer": "A"
-    }
-  ],
-  "descriptive": [
-    {
-      "question": "Question"
-    }
-  ]
-}`
+    "score": 0,
+    "level": "Beginner",
+    "feedback": "Short useful feedback"
+}
+
+The score must be a number from 0 to 10.`
         });
 
         let result = response.text.trim();
@@ -309,86 +503,56 @@ Use exactly this JSON structure:
             .replace(/```/g, "")
             .trim();
 
-        const questions = JSON.parse(result);
-
-        res.json({
-            questions: questions
-        });
-
-    } catch (error) {
-
-        console.error(error);
-
-        res.status(500).json({
-            error: "Diagnostic generation failed"
-        });
-
-    }
-});
-app.post("/evaluate-diagnostic", async (req, res) => {
-    try {
-
-        const subject = req.body.subject;
-        const topic = req.body.topic;
-        const answers = req.body.answers;
-
-        const response = await ai.models.generateContent({
-            model: "gemini-3.5-flash-lite",
-
-            contents: `You are an AI diagnostic evaluator.
-
-Subject: ${subject}
-Topic: ${topic}
-
-Student's answers:
-${JSON.stringify(answers)}
-
-Evaluate the student's understanding.
-
-Consider:
-1. MCQ correctness
-2. Descriptive answer quality
-3. Conceptual understanding
-4. Application/ reasoning
-
-Assign one level:
-
-Beginner
-Intermediate
-Advanced
-
-Rules:
-- Beginner = weak/basic understanding
-- Intermediate = reasonable understanding
-- Advanced = strong conceptual and application understanding
-
-Return ONLY valid JSON in this exact format:
-
-{
-  "score": number,
-  "level": "Beginner",
-  "feedback": "short feedback"
-}
-
-Score should be from 0 to 10.`
-        });
-
-        let result = response.text.trim();
-
-        result = result.replace(/```json/g, "").replace(/```/g, "").trim();
-
         const evaluation = JSON.parse(result);
 
-        res.json(evaluation);
+        let score = Number(evaluation.score);
+
+        if (isNaN(score)) {
+            score = 0;
+        }
+
+        // Score 0 ते 10 मध्येच ठेवणे
+        score = Math.max(0, Math.min(10, score));
+
+        let level;
+
+        if (score < 4) {
+
+            level = "Beginner";
+
+        } else if (score < 7.5) {
+
+            level = "Intermediate";
+
+        } else {
+
+            level = "Advanced";
+        }
+
+        res.json({
+
+            score: score,
+
+            level: level,
+
+            feedback:
+                evaluation.feedback ||
+                "Diagnostic evaluation completed."
+        });
 
     } catch (error) {
 
-        console.error(error);
+        console.error(
+            "DIAGNOSTIC EVALUATION ERROR:",
+            error
+        );
 
         res.status(500).json({
-            error: "Diagnostic evaluation failed"
-        });
 
+            error: "Diagnostic evaluation failed",
+
+            details: error.message
+        });
     }
 });
 app.post("/personalized-learning", async (req, res) => {
@@ -508,28 +672,45 @@ app.post("/ai-teaching", async (req, res) => {
         const response = await ai.models.generateContent({
             model: "gemini-3.5-flash-lite",
 
-            contents: `You are an AI teacher.
+            contents: `You are a personalized AI teacher.
+
+Your task is to create a fresh and useful teaching lesson for the student every time this request is made.
 
 Subject: ${subject}
 Topic: ${topic}
 Selected Language: ${language}
 
-Teach ONLY in the selected language.
+IMPORTANT:
+Generate the lesson specifically for the given Subject and Topic.
+
+Each time the student starts AI Teaching, create a fresh lesson.
+Do not assume that the student has seen a previous lesson.
+Do not repeat a fixed or memorized explanation.
+Use natural variation in examples and explanation while keeping the information factually correct.
 
 STRICT LANGUAGE RULE:
 - If Selected Language is "English": write ONLY English. Do NOT write Marathi.
 - If Selected Language is "Marathi": write ONLY Marathi. Important technical terms may remain in English brackets.
-- If Selected Language is "Both": write English explanation followed by Marathi explanation.
+- If Selected Language is "Both": first give the English explanation and then give the Marathi explanation.
 
 Do NOT provide translation unless the selected language is "Both".
 
-Teaching requirements:
-1. Start with a simple definition.
+TEACHING REQUIREMENTS:
+
+1. Start with a simple and accurate definition.
 2. Explain the basic concept step-by-step.
-3. Give a simple example.
-4. Give a real-world example or application when appropriate.
-5. Keep the explanation beginner-friendly.
-6. Do not ask test questions.
+3. Explain important points in a logical order.
+4. Give a simple example.
+5. Give a real-world example or application when appropriate.
+6. Keep the explanation beginner-friendly.
+7. Adjust the explanation according to the subject and topic.
+8. Do not ask diagnostic or test questions.
+9. Do not include MCQs.
+10. Do not include descriptive questions.
+11. Do not evaluate the student.
+12. Do not include unnecessary information unrelated to the selected topic.
+
+The lesson should prepare the student to understand the topic before taking the Diagnostic Test.
 
 Return ONLY valid JSON.
 Do not use markdown.
